@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Issuing Client</title>
+</head>
+<body>
+    <h1>Assign Address</h1>
+    <input type="text" id="userInput" placeholder="User ID">
+    <button id="assignAddressBtn">Assign Address</button>
+    <div id="responseOutput_00"></div>
+
+    <h1>Set Ticket Count</h1>
+    <input type="text" id="accountInput_0" placeholder="Account Address">
+    <button id="setTicketCountBtn">Set Ticket Count</button>
+    <div id="responseOutput_0"></div>
+
+    <h1>Issue Ticket</h1>
+    <input type="text" id="accountInput" placeholder="Account Address">
+    <input type="number" id="concertNoInput" placeholder="Concert Number">
+    <button id="issueTicketBtn">Issue Ticket</button>
+    <div id="responseOutput"></div>
+
+    <h1>Purchase Ticket</h1>
+    <input type="number" id="ticketNoInput_2" placeholder="Ticket Number">
+    <input type="text" id="accountInput_2" placeholder="Account Address">
+    <input type="number" id="valueInput_2" placeholder="Value">
+    <button id="purchaseTicketBtn">Purchase Ticket</button>
+    <div id="responseOutput_2"></div>
+
+    <h1>Refund Ticket Request</h1>
+    <input type="number" id="ticketNoInput_3" placeholder="Ticket Number">
+    <input type="text" id="accountInput_3" placeholder="Account Address">
+    <button id="refundTicketBtn">Refund Ticket Request</button>
+    <div id="responseOutput_3"></div>
+
+    <h1>Check Ticket</h1>
+    <input type="number" id="ticketNoInput_4" placeholder="Ticket Number">
+    <input type="text" id="accountInput_4" placeholder="Account Address">
+    <button id="checkTicketBtn">Check Ticket</button>
+    <div id="responseOutput_4"></div>
+
+    <h1>Refund Approve</h1>
+    <input type="number" id="ticketNoInput_5" placeholder="Ticket Number">
+    <input type="text" id="accountInput_5" placeholder="Account Address">
+    <button id="checkRefundedTicketBtn">Refund Approve</button>
+    <div id="responseOutput_5"></div>
+
+    <script>
+        document.getElementById('assignAddressBtn').addEventListener('click', async () => {
+            const id = document.getElementById('userInput').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/assignAddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_00').innerHTML = `
+                    Successfully Address Assigned: <br>
+                    Address: ${data.userAddress}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_00').innerText = `Failed to assign address: ${error}`;
+            }
+        });
+
+        document.getElementById('setTicketCountBtn').addEventListener('click', async () => {
+            const account = document.getElementById('accountInput_0').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/setTicketCount', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ account })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_0').innerHTML = `
+                    The number of ticket in DB : ${data.oriTicketCount}<br>
+                    New ticke number will be : ${data.newTicketCount}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_0').innerText = `Failed to set ticket count: ${error}`;
+            }
+        });
+
+        document.getElementById('issueTicketBtn').addEventListener('click', async () => {
+            const account = document.getElementById('accountInput').value;
+            const concertNo = document.getElementById('concertNoInput').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/issueTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ account, concert_no: concertNo })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput').innerHTML = `
+                    Successfully Ticket Issued: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Concert No: ${data.concertNo}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput').innerText = `Failed to issue ticket: ${error}`;
+            }
+        });
+
+        document.getElementById('purchaseTicketBtn').addEventListener('click', async () => {            
+            const ticketNo = document.getElementById('ticketNoInput_2').value;
+            const account = document.getElementById('accountInput_2').value;
+            const value = document.getElementById('valueInput_2').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/purchaseTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account, _value: value })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_2').innerHTML = `
+                    Successfully Ticket Purchased: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Concert No: ${data.concertNo}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_2').innerText = `Failed to purchase ticket: ${error}`;
+            }
+        });
+
+        document.getElementById('refundTicketBtn').addEventListener('click', async () => {            
+            const ticketNo = document.getElementById('ticketNoInput_3').value;
+            const account = document.getElementById('accountInput_3').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/refundTicketRequest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_3').innerHTML = `
+                    Successfully Request Ticket Refund: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Concert No: ${data.concertNo}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_3').innerText = `Failed to refund ticket: ${error}`;
+            }
+        });
+            
+        document.getElementById('checkTicketBtn').addEventListener('click', async () => {            
+            const ticketNo = document.getElementById('ticketNoInput_4').value;
+            const account = document.getElementById('accountInput_4').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/checkTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_4').innerHTML = `
+                    Successfully Ticket Checked: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Concert No: ${data.concertNo}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_4').innerText = `Failed to check ticket: ${error}`;
+            }
+        });
+
+        document.getElementById('checkRefundedTicketBtn').addEventListener('click', async () => {
+            const ticketNo = document.getElementById('ticketNoInput_5').value;
+            const account = document.getElementById('accountInput_5').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/approveRefund', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_5').innerHTML = `
+                    Successfully Approve Refund: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Concert No: ${data.concertNo}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_5').innerText = `Failed to approve refund: ${error}`;
+            }
+        });
+    </script>
+</body>
+</html>

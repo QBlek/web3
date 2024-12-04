@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buyer Page</title>
+</head>
+<body>
+    <h1><div id="userNameDisplay"></div> Dashboard</h1>
+
+    <h2>Assign Address</h2>
+    <input type="text" id="userInput" placeholder="User ID">
+    <button id="assignAddressBtn">Assign Address</button>
+    <div id="responseOutput_0"></div>
+
+    <h2>Purchase Ticket</h2>
+    <input type="number" id="ticketNoInput_2" placeholder="Ticket Number">
+    <input type="text" id="accountInput_2" placeholder="Account Address">
+    <input type="number" id="valueInput_2" placeholder="Value">
+    <button id="purchaseTicketBtn">Purchase Ticket</button>
+    <div id="responseOutput_2"></div>
+
+    <h2>Refund Ticket</h2>
+    <input type="number" id="ticketNoInput_3" placeholder="Ticket Number">
+    <input type="text" id="accountInput_3" placeholder="Account Address">
+    <input type="text" id="buyerInput_3" placeholder="Buyer ID">
+    <button id="refundTicketBtn">Refund Ticket</button>
+    <div id="responseOutput_3"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = localStorage.getItem('user');
+            document.getElementById('userNameDisplay').textContent = user;
+        });
+
+        document.getElementById('assignAddressBtn').addEventListener('click', async () => {
+            const id = document.getElementById('userInput').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/assignAddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_0').innerHTML = `
+                    Successfully Address Assigned: <br>
+                    Address: ${data.userAddress}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_0').innerText = `Failed to assign address: ${error}`;
+            }
+        });
+
+        document.getElementById('purchaseTicketBtn').addEventListener('click', async () => {            
+            const ticketNo = document.getElementById('ticketNoInput_2').value;
+            const account = document.getElementById('accountInput_2').value;
+            const value = document.getElementById('valueInput_2').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/purchaseTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account, _value: value })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_2').innerHTML = `
+                    Successfully Ticket Purchased: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Ticket Info: ${data.info}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_2').innerText = `Failed to purchase ticket: ${error}`;
+            }
+        });
+
+        document.getElementById('refundTicketBtn').addEventListener('click', async () => {            
+            const ticketNo = document.getElementById('ticketNoInput_3').value;
+            const account = document.getElementById('accountInput_3').value;
+            const buyer = document.getElementById('buyerInput_3').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/refundTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ticket_no: ticketNo, account, buyer })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput_3').innerHTML = `
+                    Successfully Ticket Refunded: <br>
+                    Ticket Number: ${data.newTicketNumber}<br>
+                    Ticket Info: ${data.info}<br>
+                    Ticket Price: ${data.ticketPrice}<br>
+                    Ticket Owner: ${data.ticketOwner}<br>
+                    Issued Date: ${data.issuedDate}<br>
+                    Purchased Date: ${data.purchasedDate}<br>
+                    State: ${data.state}
+                `;
+            } catch (error) {
+                console.log('Error:', error);
+                document.getElementById('responseOutput_3').innerText = `Failed to refund ticket: ${error}`;
+            }
+        });        
+    </script>   
+</body>
+</html>

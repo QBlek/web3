@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <div>
+        <label> ID: <input type="text" id="id"></label>
+    </div>
+    <div>
+        <label> PW: <input type="password" id="password"></label>
+    </div>
+    <button id="loginButton"> Login </button>    
+    <div id="responseOutput"></div>
+
+    <script>
+        document.getElementById('loginButton').addEventListener('click', async () => {
+        var id = document.getElementById('id').value;
+        var password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:3000/api/passwordCheck', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            });
+
+            if (!response.ok) {
+                alert(`Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if(data.userPw == password) {
+                if(id == 'seller') {
+                    window.location.href = 'seller.html';
+                }
+                else {
+                    window.location.href = 'buyer.html';
+                }
+            } else {
+                alert('Error: Password doesnt match!');
+            }
+            document.getElementById('responseOutput').innerHTML = `
+                Password: ${data.userPw}
+            `;
+
+            localStorage.setItem('user', id);
+
+        } catch {
+            console.log('Error:', error);
+        }        
+    })
+    </script>
+</body>
+</html> 
